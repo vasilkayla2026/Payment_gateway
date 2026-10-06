@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Read(//c/Users/Vasil/.claude/**)",
+      "Read(//c/Users/Vasil/AppData/Roaming/Code/User/**)",
+      "PowerShell($a = Get-Content -Raw \"$env:USERPROFILE\\\\.claude\\\\settings.json\" | ConvertFrom-Json; \"claude settings OK, ask rules: $\\($a.permissions.ask.Count\\)\"; $b = Get-Content -Raw \"$env:APPDATA\\\\Code\\\\User\\\\settings.json\" | ConvertFrom-Json; \"vscode settings OK, bypass toggle: $\\($b.'claudeCode.allowDangerouslySkipPermissions'\\)\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Vasil\\AppData\\Roaming\\Code\\User",
+      "C:\\Users\\Vasil\\.claude"
+    ]
+  }
+}
