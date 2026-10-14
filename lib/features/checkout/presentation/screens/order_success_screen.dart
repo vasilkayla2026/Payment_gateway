@@ -1,26 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/navigation/app_router.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_layout.dart';
 import '../../../../core/widgets/bottom_action_bar.dart';
 import '../../../../core/widgets/responsive_center.dart';
-import '../bloc/checkout_bloc.dart';
 import '../widgets/order_receipt_card.dart';
 
-/// Route arguments of `AppRoutes.orderSuccess`: the references of a
-/// successful payment.
-class OrderSuccessArgs {
-  /// The gateway order id created by the backend.
-  final String orderId;
-
-  /// The gateway's payment reference.
-  final String transactionId;
-
-  const OrderSuccessArgs({required this.orderId, required this.transactionId});
-}
-
-/// Shown after a successful payment with the order and payment references.
-/// "Continue shopping" returns to the product page.
+/// Shown after a successful payment with the policy and the payment
+/// references. "Done" returns to the policy page.
 class OrderSuccessScreen extends StatelessWidget {
   const OrderSuccessScreen({super.key, this.args});
 
@@ -30,20 +18,14 @@ class OrderSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = this.args;
-    final checkout = context.watch<CheckoutBloc>().state;
-    final item = checkout.item;
-    final pricing = checkout.pricing;
-    final customer = checkout.customer;
-    if (args == null || item == null || pricing == null || customer == null) {
-      return const _NoRecentOrderView();
-    }
+    if (args == null) return const _NoRecentPurchaseView();
 
     final theme = Theme.of(context);
-    final firstName = customer.fullName.trim().split(_whitespace).first;
+    final quote = args.quote;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order confirmed'),
+        title: const Text('Purchase complete'),
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
@@ -54,11 +36,11 @@ class OrderSuccessScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 16),
-              ExcludeSemantics(
+              const ExcludeSemantics(
                 child: Icon(
                   Icons.check_circle_rounded,
                   size: 88,
-                  color: theme.colorScheme.primary,
+                  color: AppColors.presentText,
                 ),
               ),
               const SizedBox(height: 16),
@@ -71,7 +53,8 @@ class OrderSuccessScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Thank you, $firstName! Your order has been placed.',
+                'Thank you! Your payment for ${quote.policy.name} is '
+                'complete.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
@@ -79,8 +62,8 @@ class OrderSuccessScreen extends StatelessWidget {
               OrderReceiptCard(
                 orderId: args.orderId,
                 transactionId: args.transactionId,
-                item: item,
-                amountMinor: pricing.totalMinor,
+                quote: quote,
+                amountMinor: quote.premiumMinor,
               ),
             ],
           ),
@@ -88,47 +71,46 @@ class OrderSuccessScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const BottomActionBar(
         maxWidth: AppLayout.formMaxWidth,
-        action: _ContinueShoppingButton(),
+        action: _DoneButton(),
       ),
     );
   }
-
-  static final RegExp _whitespace = RegExp(r'\s+');
 }
 
 /// Shown if the screen is reached without a completed payment.
-class _NoRecentOrderView extends StatelessWidget {
-  const _NoRecentOrderView();
+class _NoRecentPurchaseView extends StatelessWidget {
+  const _NoRecentPurchaseView();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order confirmed'),
+        title: const Text('Purchase complete'),
         automaticallyImplyLeading: false,
       ),
       body: const Center(
         child: Padding(
           padding: EdgeInsets.all(AppLayout.pagePadding),
-          child: Text('No recent order.', textAlign: TextAlign.center),
+          child: Text('No recent purchase.', textAlign: TextAlign.center),
         ),
       ),
       bottomNavigationBar: const BottomActionBar(
         maxWidth: AppLayout.formMaxWidth,
-        action: _ContinueShoppingButton(),
+        action: _DoneButton(),
       ),
     );
   }
 }
 
-class _ContinueShoppingButton extends StatelessWidget {
-  const _ContinueShoppingButton();
+/// Back to the policy page.
+class _DoneButton extends StatelessWidget {
+  const _DoneButton();
 
   @override
   Widget build(BuildContext context) {
     return FilledButton(
       onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
-      child: const Text('Continue shopping'),
+      child: const Text('Done'),
     );
   }
 }

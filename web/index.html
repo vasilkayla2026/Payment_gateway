@@ -31,6 +31,9 @@
 
   <title>payment_gateway</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Razorpay Checkout, opened from Dart through openRazorpay below. -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <!--
@@ -42,5 +45,11 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Called by RazorpayCheckout (razorpay_checkout_web.dart).
+    function openRazorpay(options) {
+      new Razorpay(options).open();
+    }
+  </script>
 </body>
 </html>

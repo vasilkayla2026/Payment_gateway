@@ -1,18 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/usecases/create_order_id.dart';
+import '../../domain/entities/checkout_result.dart';
+import '../../domain/services/payment_checkout.dart';
+import '../../domain/usecases/create_payment_order.dart';
 import 'payment_event.dart';
 import 'payment_state.dart';
 
-/// Runs "Proceed to pay": gets a gateway order id for the amount from the
-/// backend. Provided per review screen, so every visit starts fresh.
+/// Runs "Add policy": the backend creates a Razorpay order, then the
+/// customer pays in Razorpay Checkout. Razorpay tells the backend about the
+/// payment through its webhook; the app only learns how Checkout ended.
+/// Provided with the policy screen.
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
-  final CreateOrderId _createOrderId;
+  final CreatePaymentOrder _createPaymentOrder;
+  final PaymentCheckout _checkout;
 
   static const String errorMessage =
       'Could not start the payment. Please try again.';
 
-  PaymentBloc(this._createOrderId) : super(const PaymentState()) {
+  PaymentBloc(this._createPaymentOrder, this._checkout)
+    : super(const PaymentState()) {
     on<PaymentRequested>(_onRequested);
   }
 
@@ -24,8 +30,21 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
     emit(const PaymentState(status: PaymentStatus.loading));
     try {
-      final orderId = await _createOrderId(event.amountMinor);
-      emit(PaymentState(status: PaymentStatus.orderCreated, orderId: orderId));
+      // 1. The backend creates the Razorpay order.
+      final order = await _createPaymentOrder(event.amountMinor);
+      // 2. The customer pays in Razorpay Checkout.
+      final result = await _checkout.open(
+        order,
+        description: event.description,
+      );
+      emit(switch (result) {
+        CheckoutPaid(:final paymentId) => PaymentState(
+          status: PaymentStatus.paid,
+          orderId: order.orderId,
+          paymentId: paymentId,
+        ),
+        CheckoutClosed() => const PaymentState(status: PaymentStatus.cancelled),
+      });
     } catch (error, stackTrace) {
       // Never leave the UI stuck in loading.
       addError(error, stackTrace);

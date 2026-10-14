@@ -1,5 +1,6 @@
+import '../entities/payment_order.dart';
+
 abstract interface class PaymentRepository {
-  /// Asks the backend to create a payment-gateway order for [amountMinor]
-  /// (paise) and returns its order id.
-  Future<String> createOrderId(int amountMinor);
+  /// Asks the backend to create a Razorpay order for [amountMinor] (paise).
+  Future<PaymentOrder> createOrder(int amountMinor);
 }

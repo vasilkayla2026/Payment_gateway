@@ -7,13 +7,14 @@ sealed class PaymentEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// "Proceed to pay" for [amountMinor] (paise). Ignored while a request is
-/// already running.
+/// "Add policy": pay [amountMinor] (paise) for what [description] names.
+/// Ignored while a payment is already running.
 class PaymentRequested extends PaymentEvent {
   final int amountMinor;
+  final String description;
 
-  const PaymentRequested(this.amountMinor);
+  const PaymentRequested(this.amountMinor, {required this.description});
 
   @override
-  List<Object?> get props => [amountMinor];
+  List<Object?> get props => [amountMinor, description];
 }

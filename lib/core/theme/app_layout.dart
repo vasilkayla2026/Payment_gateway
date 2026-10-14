@@ -7,7 +7,4 @@ abstract final class AppLayout {
 
   /// Maximum width of forms and single-column summaries.
   static const double formMaxWidth = 640;
-
-  /// Width from which the product page shows image and details side by side.
-  static const double wideBreakpoint = 720;
 }

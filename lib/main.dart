@@ -6,5 +6,5 @@ import 'core/di/di.dart' as di;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  runApp(const ShopApp());
+  runApp(const InsuranceApp());
 }

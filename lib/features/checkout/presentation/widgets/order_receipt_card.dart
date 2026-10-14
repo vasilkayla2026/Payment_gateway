@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/money_formatter.dart';
-import '../../domain/entities/order_item.dart';
+import '../../../policy/domain/entities/policy_quote.dart';
 
-/// Confirmation-step card listing the references and amounts of a paid
-/// order.
+/// Confirmation-step card listing the references and amount of a paid
+/// order, and the policy it paid for.
 class OrderReceiptCard extends StatelessWidget {
   const OrderReceiptCard({
     super.key,
     required this.orderId,
     required this.transactionId,
-    required this.item,
+    required this.quote,
     required this.amountMinor,
   });
 
@@ -20,7 +20,7 @@ class OrderReceiptCard extends StatelessWidget {
   /// The gateway's payment reference.
   final String transactionId;
 
-  final OrderItem item;
+  final PolicyQuote quote;
   final int amountMinor;
 
   @override
@@ -41,10 +41,13 @@ class OrderReceiptCard extends StatelessWidget {
             const SizedBox(height: 12),
             _ReceiptRow(label: 'Amount paid', value: formatMoney(amountMinor)),
             const SizedBox(height: 12),
+            _ReceiptRow(label: 'Policy', value: quote.policy.name),
+            const SizedBox(height: 12),
             _ReceiptRow(
-              label: 'Item',
+              label: 'Cover',
               value:
-                  '${item.quantity} × ${item.product.name} (${item.color.name})',
+                  '${quote.cover.name}, '
+                  '${formatMoneyWhole(quote.plan.sumInsuredMinor)} sum insured',
             ),
           ],
         ),
@@ -71,7 +74,7 @@ class _ReceiptRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final valueStyle = theme.textTheme.bodyMedium?.copyWith(
+    final valueStyle = theme.textTheme.bodyLarge?.copyWith(
       fontWeight: FontWeight.w600,
     );
 

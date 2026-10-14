@@ -3,19 +3,26 @@ import 'package:equatable/equatable.dart';
 enum PaymentStatus {
   initial,
 
-  /// Waiting for the backend to create the order.
+  /// Creating the order, or waiting for the customer in Razorpay Checkout.
   loading,
 
-  /// [PaymentState.orderId] is ready for the gateway checkout.
-  orderCreated,
+  /// Checkout reports the payment done; [PaymentState.orderId] and
+  /// [PaymentState.paymentId] are set.
+  paid,
+
+  /// The customer closed Checkout without paying.
+  cancelled,
   failure,
 }
 
 class PaymentState extends Equatable {
   final PaymentStatus status;
 
-  /// Gateway order id from the backend; set on [PaymentStatus.orderCreated].
+  /// Razorpay's order id; set on [PaymentStatus.paid].
   final String? orderId;
+
+  /// Razorpay's payment id; set on [PaymentStatus.paid].
+  final String? paymentId;
 
   /// Message for the customer; set on [PaymentStatus.failure].
   final String? error;
@@ -23,11 +30,12 @@ class PaymentState extends Equatable {
   const PaymentState({
     this.status = PaymentStatus.initial,
     this.orderId,
+    this.paymentId,
     this.error,
   });
 
   bool get isLoading => status == PaymentStatus.loading;
 
   @override
-  List<Object?> get props => [status, orderId, error];
+  List<Object?> get props => [status, orderId, paymentId, error];
 }
