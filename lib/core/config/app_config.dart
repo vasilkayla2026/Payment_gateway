@@ -3,7 +3,7 @@
 final class AppConfig {
   /// Backend that creates payment orders: payment_gateway_backend, run
   /// locally. Use its deployed URL in production.
-  static const String baseUrl = 'http://localhost:3000';
+  static const String baseUrl = 'https://coma-argue-carnival.ngrok-free.dev';
   static const String appName = 'Policy';
 
   /// ISO 4217 currency code handed to the payment gateway.

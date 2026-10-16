@@ -15,4 +15,5 @@ abstract final class AppColors {
   // Status colours
   static const Color presentText = Color(0xFF52C41A);
   static const Color absentText = Color(0xFFE25C5C);
+  static const Color pendingText = Color(0xFFFA8C16);
 }

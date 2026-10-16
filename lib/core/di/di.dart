@@ -6,6 +6,10 @@ import '../../features/payment/domain/repositories/payment_repository.dart';
 import '../../features/payment/domain/services/payment_checkout.dart';
 import '../../features/payment/domain/usecases/create_payment_order.dart';
 import '../../features/payment/presentation/bloc/payment_bloc.dart';
+import '../../features/payment_history/data/repositories/payment_history_repository_impl.dart';
+import '../../features/payment_history/domain/repositories/payment_history_repository.dart';
+import '../../features/payment_history/domain/usecases/get_payment_history.dart';
+import '../../features/payment_history/presentation/bloc/payment_history_bloc.dart';
 import '../../features/policy/data/datasources/policy_local_data_source.dart';
 import '../../features/policy/data/repositories/policy_repository_impl.dart';
 import '../../features/policy/domain/repositories/policy_repository.dart';
@@ -42,5 +46,17 @@ Future<void> init() async {
   // Factory: provided with the policy screen, next to its PolicyBloc.
   sl.registerFactory<PaymentBloc>(
     () => PaymentBloc(sl<CreatePaymentOrder>(), sl<PaymentCheckout>()),
+  );
+
+  // Payment history
+  sl.registerLazySingleton<PaymentHistoryRepository>(
+    () => PaymentHistoryRepositoryImpl(sl<ApiClient>()),
+  );
+  sl.registerLazySingleton<GetPaymentHistory>(
+    () => GetPaymentHistory(sl<PaymentHistoryRepository>()),
+  );
+  // Factory: provided with the payment history page, fresh on each visit.
+  sl.registerFactory<PaymentHistoryBloc>(
+    () => PaymentHistoryBloc(sl<GetPaymentHistory>()),
   );
 }

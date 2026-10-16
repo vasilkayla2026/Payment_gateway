@@ -25,10 +25,16 @@ class _NavItem {
   bool get hasChildren => children.isNotEmpty;
 }
 
-/// The ADSL ESS app's menu. Dashboard is the policy page; every other
-/// destination opens a "No data" page.
+/// The ADSL ESS app's menu, plus Payment History. Dashboard is the policy
+/// page and Payment History lists past payments; every other destination
+/// opens a "No data" page.
 const List<_NavItem> _navItems = [
   _NavItem(Icons.grid_view_rounded, 'Dashboard', AppRoutes.policy),
+  _NavItem(
+    Icons.receipt_long_outlined,
+    'Payment History',
+    AppRoutes.paymentHistory,
+  ),
   _NavItem(
     Icons.groups_2_outlined,
     'My Team',
@@ -84,6 +90,7 @@ class AppShell extends StatelessWidget {
     super.key,
     required this.title,
     required this.body,
+    this.actions,
     this.bottomNavigationBar,
   });
 
@@ -93,6 +100,9 @@ class AppShell extends StatelessWidget {
 
   final String title;
   final Widget body;
+
+  /// Buttons at the end of the app bar, e.g. a refresh button.
+  final List<Widget>? actions;
   final Widget? bottomNavigationBar;
 
   @override
@@ -103,6 +113,7 @@ class AppShell extends StatelessWidget {
         title: Text(title),
         // The menu button on phones; beside the sidebar, nothing, as in ESS.
         automaticallyImplyLeading: isSmallScreen,
+        actions: actions,
       ),
       drawer: isSmallScreen
           ? const Drawer(width: 220, child: _Sidebar())

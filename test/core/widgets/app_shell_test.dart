@@ -43,6 +43,7 @@ void main() {
     expect(find.byTooltip('Open navigation menu'), findsNothing);
     for (final label in [
       'Dashboard',
+      'Payment History',
       'My Team',
       'Attendance',
       'Leave',

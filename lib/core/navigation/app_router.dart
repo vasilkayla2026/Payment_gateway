@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../features/checkout/presentation/screens/order_success_screen.dart';
 import '../../features/payment/presentation/bloc/payment_bloc.dart';
+import '../../features/payment_history/presentation/bloc/payment_history_bloc.dart';
+import '../../features/payment_history/presentation/bloc/payment_history_event.dart';
+import '../../features/payment_history/presentation/screens/payment_history_screen.dart';
 import '../../features/policy/presentation/bloc/policy_bloc.dart';
 import '../../features/policy/presentation/bloc/policy_event.dart';
 import '../../features/policy/domain/entities/policy_quote.dart';
@@ -14,6 +17,9 @@ import '../widgets/no_data_screen.dart';
 /// other's screens.
 abstract final class AppRoutes {
   static const String policy = '/';
+
+  /// Sidebar destination: past orders and how their payments went.
+  static const String paymentHistory = '/payment-history';
 
   /// Takes [OrderSuccessArgs].
   static const String orderSuccess = '/checkout/success';
@@ -65,6 +71,12 @@ abstract final class AppRouter {
             BlocProvider<PaymentBloc>(create: (_) => sl<PaymentBloc>()),
           ],
           child: const PolicyScreen(),
+        ),
+        // A fresh BLoC on every visit, so each visit loads the latest orders.
+        AppRoutes.paymentHistory => BlocProvider<PaymentHistoryBloc>(
+          create: (_) =>
+              sl<PaymentHistoryBloc>()..add(const PaymentHistoryRequested()),
+          child: const PaymentHistoryScreen(),
         ),
         _ => NoDataScreen(title: settings.arguments as String? ?? ''),
       },
